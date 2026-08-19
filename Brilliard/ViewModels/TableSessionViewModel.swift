@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import Observation
 
 @Observable
 final class TableSessionViewModel {
@@ -36,6 +37,7 @@ final class TableSessionViewModel {
         }
     
     func startRound() {
+        guard isRoundReady else { return }
         let round = Round(mode: pendingMode)
         
         round.startedAt = Date()
@@ -50,8 +52,13 @@ final class TableSessionViewModel {
         Task { await save() }
     }
     
-    func pauseRound() {
-        timerEngine.pause()
+    func finishRound() {
+        guard let round = table.activeRound else { return }
+        _ = timerEngine.stop()
+        round.endedAt = Date()
+        resetPending()
+        
+        Task { await save() }
     }
     
     @MainActor

@@ -6,12 +6,11 @@
 //
 
 import Foundation
-import Combine
 
-final class TimerEngine: ObservableObject {
+@Observable
+final class TimerEngine {
     private(set) var isRunning = false
-    private(set) var startDate: Date?
-    private var accumulated: TimeInterval = 0
+    private var startDate: Date?
     private var tickTask: Task<Void, Never>?
     
     var displaySeconds: TimeInterval = 0
@@ -22,26 +21,20 @@ final class TimerEngine: ObservableObject {
         startDate = Date()
         tickTask = Task { [weak self] in
             while let self, self.isRunning {
-                self.displaySeconds = self.currentElapsed()
+                if let start = self.startDate {
+                    self.displaySeconds = Date().timeIntervalSince(start)
+                }
                 try? await Task.sleep(for: .seconds(1))
             }
         }
     }
     
-    func pause() {
-        guard !isRunning else { return }
+    @discardableResult
+    func stop() -> TimeInterval {
         isRunning = false
-        accumulated += currentElapsed()
         tickTask?.cancel()
+        let elapsed = displaySeconds
+        startDate = nil
+        return elapsed
     }
-    
-    func reset() {
-        pause()
-        accumulated = 0
-        displaySeconds = 0
-    }
-    
-    private func currentElapsed() -> TimeInterval {
-            accumulated + (startDate.map { Date.now.timeIntervalSince($0) } ?? 0)
-        }
 }

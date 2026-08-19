@@ -15,7 +15,7 @@ struct PaymentResult: Identifiable {
 }
 
 enum PaymentCalculator {
-    func calculate(for game: Game) -> [PaymentResult] {
+    static func calculate(for game: Game) -> [PaymentResult] {
         let totalHours = game.rentedSeconds / 3600
         guard totalHours > 0 else { return [] }
         
