@@ -14,9 +14,6 @@ final class Player {
     var game: Game?
     var name: String
     
-    @Relationship(inverse: \Round.participants)
-    var rounds: [Round] = []
-    
     init(name: String) {
         self.id = UUID()
         self.name = name

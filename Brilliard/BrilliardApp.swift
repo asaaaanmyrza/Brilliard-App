@@ -12,7 +12,9 @@ import SwiftData
 struct BrilliardApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RouterView {
+                GameListView()
+            }
         }
         .modelContainer(for: [Game.self, Player.self, Table.self, Round.self])
     }
