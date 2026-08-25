@@ -11,9 +11,10 @@ import SwiftData
 struct NewGameView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = NewGameViewModel()
     
-//    var onCreated: (Game) -> Void
+    @EnvironmentObject private var router: Router
+    
+    @State private var viewModel = NewGameViewModel()
     
     var body: some View {
         Form {
@@ -35,34 +36,40 @@ struct NewGameView: View {
                 Text("Игроки")
                 Spacer()
                 Button (action: {
-                    viewModel.addPlayerField()
+                    withAnimation {
+                        viewModel.addPlayerField()
+                    }
                 }) {
-                    Image(systemName: "person.badge.plus")
+                    Image(systemName: "person.crop.circle.badge.plus")
+                        .imageScale(.large)
                 }
-                .foregroundStyle(Color.secondary)
-                .background(
-                    Circle()
-                        .foregroundStyle(.white)
-                        .frame(width: 30, height: 30)
-                )
             }
             ) {
-                ForEach(viewModel.playerNames.indices, id: \.self) { i in
+                ForEach(viewModel.players, id: \.id) { player in
+                    let index = viewModel.players.firstIndex(where: { $0.id == player.id }) ?? 0
                     HStack {
-                        TextField("Игрок \(i+1)", text: $viewModel.playerNames[i])
+                        @Bindable var bindablePlayer = player
+                        TextField("Игрок \(index+1)", text: $bindablePlayer.name)
                     }
                 }
-                .onDelete { viewModel.playerNames.remove(atOffsets: $0) }
-                
+                .onDelete { indexSet in
+                    withAnimation {
+                        indexSet.forEach { index in
+                            viewModel.players.remove(at: index)
+                        }
+                    }
+                    
+                }
             }
             
             Button ("Начать игру!") {
-                
+                let game = viewModel.createGame(context: context)
+                router.push(.activeGame(game: game))
             }
         }
     }
 }
 
-#Preview {
-    NewGameView()
-}
+    #Preview {
+        NewGameView()
+    }

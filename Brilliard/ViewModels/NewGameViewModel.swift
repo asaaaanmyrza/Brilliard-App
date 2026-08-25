@@ -13,24 +13,23 @@ import Observation
 final class NewGameViewModel {
     var pricePerHour: Decimal = 1000
     var tableCount: Int = 1
-    var playerNames: [String] = [""]
+    var players: [Player] = [Player(name:"")]
     
     func addPlayerField() {
-        playerNames.append("")
+        players.append(Player(name:""))
     }
     
     func removePlayer(at index: Int) {
-        playerNames.remove(at: index)
+        players.remove(at: index)
     }
     
     var isValid: Bool {
-            playerNames.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }.count >= 2
+        players.filter { !$0.name.trimmingCharacters(in: .whitespaces).isEmpty }.count >= 2
         }
     
     func createGame(context: ModelContext) -> Game {
         let game = Game(pricePerHour: pricePerHour, tableCount: tableCount)
-        for name in playerNames where !name.trimmingCharacters(in: .whitespaces).isEmpty {
-            let player = Player(name: name)
+        for player in players where !player.name.trimmingCharacters(in: .whitespaces).isEmpty {
             player.game = game
             game.roster.append(player)
         }

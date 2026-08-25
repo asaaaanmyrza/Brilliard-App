@@ -12,7 +12,7 @@ import Foundation
 // DESTINATIONS
 
 enum Route: Hashable {
-    case tableList
+    case activeGame(game: Game)
 }
 
 enum SheetRoute: Identifiable, Hashable {

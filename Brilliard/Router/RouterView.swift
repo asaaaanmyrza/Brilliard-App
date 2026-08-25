@@ -36,6 +36,10 @@ struct RouterView<Content: View>: View {
     
     @ViewBuilder
     func destination(for route: Route) -> some View {
+        switch route {
+        case .activeGame(let game):
+            ActiveGameView(game: game)
+        }
     }
     
     @ViewBuilder
