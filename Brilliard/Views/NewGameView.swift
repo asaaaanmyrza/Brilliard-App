@@ -65,6 +65,7 @@ struct NewGameView: View {
             Button ("Начать игру!") {
                 let game = viewModel.createGame(context: context)
                 router.push(.activeGame(game: game))
+                router.dismissSheet()
             }
         }
     }

@@ -6,10 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ActiveGameView: View {
+    @Environment(\.modelContext) var context
+    
+    @EnvironmentObject private var router: Router
+    
+    @State private var viewModel = ActiveGameViewModel()
+    
     var game: Game
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button ("Finish Game") {
+            Task {
+                await viewModel.finishGame()
+            }
+            router.pop()
+        }
+        .task {
+            viewModel.configure(game: game, context: context)
+        }
     }
 }

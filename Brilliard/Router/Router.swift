@@ -16,10 +16,10 @@ enum Route: Hashable {
 }
 
 enum SheetRoute: Identifiable, Hashable {
-    case placeholder
+    case newGame
     var id: String {
         switch self {
-        case .placeholder: "placeholder"
+        case .newGame: "newGame"
         }
     }
 }

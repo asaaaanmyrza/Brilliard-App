@@ -20,9 +20,9 @@ final class TableSessionViewModel {
     
     var context: ModelContext
     
-    init(table: Table, modelContext: ModelContext) {
+    init(table: Table, context: ModelContext) {
         self.table = table
-        self.context = modelContext
+        self.context = context
     }
     
     var isRoundReady: Bool {

@@ -45,8 +45,8 @@ struct RouterView<Content: View>: View {
     @ViewBuilder
     func sheetDestination(for sheet: SheetRoute) -> some View {
         switch sheet {
-        case .placeholder:
-            Text("Placeholder")
+        case .newGame:
+            NewGameView()
         }
     }
     

@@ -10,16 +10,29 @@ import SwiftData
 
 @Observable
 final class ActiveGameViewModel {
-    let game: Game
-    var tableSessions: [TableSessionViewModel]
-    private let modelContext: ModelContext
+    var game: Game?
+    private var tableSessions: [TableSessionViewModel] = []
+    private var context: ModelContext?
     
-    init(game: Game, modelContext: ModelContext) {
-        self.game = game
-        self.modelContext = modelContext
+    init() { }
+    
+    func configure(game: Game, context: ModelContext) {
+        configureGame(game: game)
+        configureContext(context: context)
         self.tableSessions = game.tables
             .sorted{$0.number < $1.number}
-            .map { TableSessionViewModel(table: $0, modelContext: modelContext) }
+            .map { TableSessionViewModel(table: $0, context: context) }
+    }
+    
+    func configureContext(context: ModelContext) {
+        guard self.context == nil else { return }
+        self.context = context
+        
+    }
+    
+    func configureGame(game: Game) {
+        guard self.game == nil else { return }
+        self.game = game
     }
     
     var busyPlayerIDs: Set<PersistentIdentifier> {
@@ -32,6 +45,7 @@ final class ActiveGameViewModel {
     }
     
     func finishGame() async -> [PaymentResult] {
+        guard let game else { return [] }
         for session in tableSessions where session.timerEngine.isRunning {
             session.finishRound()
         }
@@ -39,7 +53,7 @@ final class ActiveGameViewModel {
         game.finishedAt = Date()
         
         await MainActor.run {
-            try? modelContext.save()
+            try? context?.save()
         }
         return PaymentCalculator.calculate(for: game)
     }
